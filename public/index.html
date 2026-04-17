@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="">
+
+<head>
+  <base href="/">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimum-scale=1.0, viewport-fit=cover" />
+  <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+  <title>Boys</title>
+  <link rel="manifest" href="manifest.json?v=1.02">
+  <meta data-n-head="1" name="apple-mobile-web-app-capable" content="yes">
+  <meta data-n-head="1" data-hid="mobile-web-app-capable" name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <style>
+    html {
+      height: 100vh;
+    }
+
+    html,
+    body {
+      margin: 0;
+      overflow: hidden;
+      overscroll-behavior: none;
+      /* 禁止页面在滚动到顶部或底部时发生回弹 */
+    }
+
+    #app {
+      height: 100%;
+    }
+
+    body {
+      background-color: #151724;
+      max-width: 500px;
+      margin: 0 auto !important;
+      overscroll-behavior: none;
+      touch-action: none;
+      -webkit-overflow-scrolling: auto;
+    }
+
+    .page-wraper {
+      overflow-y: auto;
+      touch-action: auto;
+      /* 保留正常的滚动行为 */
+      -webkit-overflow-scrolling: touch;
+      /* 开启惯性滚动 */
+      overscroll-behavior: contain;
+      position: relative;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+
+<body style="position: fixed; top: 0; bottom: 0; left: 0; right: 0;">
+  <script>
+    if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches) {
+      document.querySelector('body').style.height = '100vh'
+    } else {
+      document.querySelector('body').style.height = document.documentElement.clientHeight + 'px'
+    }
+
+    let startY;  // 记录初始触摸位置
+
+    // touchstart 事件：记录触摸的初始位置
+    document.addEventListener('touchstart', function (e) {
+      startY = e.touches[0].clientY;
+    }, { passive: false });
+
+    // touchmove 事件：根据滑动方向判断是否阻止默认行为
+    document.addEventListener('touchmove', function (e) {
+      const target = e.target;
+
+      // 如果是在可滚动区域内
+      if (target.closest('.page-wraper')) {
+        const scrollable = target.closest('.page-wraper');
+        const scrollTop = scrollable.scrollTop;
+        const scrollHeight = scrollable.scrollHeight;
+        const offsetHeight = scrollable.offsetHeight;
+        const atTop = scrollTop === 0;
+        const atBottom = scrollTop + offsetHeight >= scrollHeight;
+
+        const moveY = e.touches[0].clientY - startY;
+
+        // 当在顶部并向下滑动，或在底部并向上滑动时，阻止默认行为
+        if ((atTop && moveY > 0) || (atBottom && moveY < 0)) {
+          // e.preventDefault();
+          return
+        }
+      } else {
+        // 非滚动区域直接阻止触摸拖动
+        e.preventDefault();
+      }
+    }, { passive: false });
+
+  </script>
+  <noscript>
+    <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled.
+        Please enable it to continue.</strong>
+  </noscript>
+  <div id="app"></div>
+  <!-- built files will be auto injected -->
+</body>
+
+</html>

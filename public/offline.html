@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>离线页面</title>
+    <style>
+        p {
+            text-align: center;
+        }
+
+        body {
+            max-width: 460px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+
+        body>img {
+            width: 20%;
+        }
+
+        .list {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .list>a {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <img src="./logo.png" alt="">
+    <p>服务已离线, 请点击以下链接重新下载</p>
+    <div class="list"></div>
+</body>
+<script>
+    const list = document.querySelector('.list')
+    const arr = localStorage.getItem('domain') ? JSON.parse(localStorage.getItem('domain')) : []
+    let content = ''
+    if (arr && arr.length) {
+        for (let index = 0; index < arr.length; index++) {
+            content += `<a href="${arr[index]}">下载地址${index + 1}：${arr[index]}</a>`
+        }
+    }
+    list.innerHTML = content
+    if (window.navigator.standalone) {
+        document.querySelector('body').style.height = '100vh'
+    } else {
+        document.querySelector('body').style.height = document.documentElement.clientHeight + 'px'
+    }
+</script>
+
+</html>
