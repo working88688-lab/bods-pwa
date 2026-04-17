@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import { getCookie } from '@/utils/auth'
 import store from '@/store'
 import { Dialog } from 'vant'
+import { initWebSdkForUser } from '@/utils/websdk'
 
 Vue.use(VueRouter)
 
@@ -716,6 +717,7 @@ router.beforeEach(async (to, from, next) => {
         const { token, infoPo } = res.data
         store.commit('SET_TOKEN', token)
         store.commit('SET_USERINFO', infoPo)
+        initWebSdkForUser(infoPo, {})
         next()
       } else {
         Dialog.alert({

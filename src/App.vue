@@ -32,6 +32,7 @@ import { useDarkPermission } from '@/apis/user'
 import { useFooterData } from '@/hooks'
 import _ from 'lodash'
 import GoDB from 'godb'
+import { initWebSdkForUser, setWebSdkChannel } from '@/utils/websdk'
 
 export default {
   name: 'App',
@@ -90,6 +91,15 @@ export default {
     },
   },
   created() {
+    // 渠道码持久化（供 SDK init 使用）
+    try {
+      const params = new URLSearchParams(window.location.search || '')
+      const ch = params.get('ch') || params.get('channel') || ''
+      if (ch) setWebSdkChannel(ch)
+    } catch (e) {
+      // ignore
+    }
+
     const searchStrList = decodeURIComponent(window.location.search)
       .split('?')
       .filter(one => one)
@@ -245,6 +255,8 @@ export default {
     async handleInited() {
       this.showMainPage = true
       this.getDarkPermission()
+      // SDK init（如果已登录/已拿到 userInfo）
+      initWebSdkForUser(this.$store.state.userInfo, {})
       window.addEventListener('load', async () => {
         const res = await useDomain({
           merchantAcct: process.env.VUE_APP_MERCHANTACCT,
@@ -260,6 +272,15 @@ export default {
       const godb = new GoDB('localDB')
       this.$store.commit('SET_GODB', godb)
     }
+  },
+  watch: {
+    userInfo: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        initWebSdkForUser(val, {})
+      },
+    },
   },
 }
 </script>

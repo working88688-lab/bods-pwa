@@ -77,6 +77,7 @@ import {
 } from '@/apis/user'
 import md5 from 'md5'
 import { encrypt } from '@/utils/rsa'
+import { initWebSdkForUser } from '@/utils/websdk'
 
 export default {
   name: 'Login',
@@ -163,6 +164,7 @@ export default {
             const { token, infoPo } = response.data
             this.$store.commit('SET_TOKEN', token)
             this.$store.commit('SET_USERINFO', infoPo)
+            initWebSdkForUser(infoPo, {})
             inviteCode && this.$store.commit('SET_INVITECODE', inviteCode)
             this.useDeviceId()
           }
@@ -189,6 +191,7 @@ export default {
           const { token, infoPo } = response.data
           this.$store.commit('SET_TOKEN', token)
           this.$store.commit('SET_USERINFO', infoPo)
+          initWebSdkForUser(infoPo, {})
           this.useDeviceId()
         }
       } catch (error) {
@@ -220,6 +223,7 @@ export default {
         const { token, infoPo } = response.data
         this.$store.commit('SET_TOKEN', token)
         this.$store.commit('SET_USERINFO', infoPo)
+        initWebSdkForUser(infoPo, {})
         this.useDeviceId()
       } else {
         this.sending = false

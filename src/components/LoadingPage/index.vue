@@ -20,6 +20,7 @@ import _ from 'lodash'
 import { Dialog } from 'vant'
 import { useBanner } from '@/apis/user'
 import { requestMultiple } from '../../utils'
+import { initWebSdkForUser, setWebSdkChannel } from '@/utils/websdk'
 
 export default {
   name: 'LoadingPage',
@@ -51,6 +52,14 @@ export default {
     },
   },
   created() {
+    // 启动阶段尽早持久化渠道码（ch）
+    try {
+      const params = new URLSearchParams(window.location.search || '')
+      const ch = params.get('ch') || params.get('channel') || ''
+      if (ch) setWebSdkChannel(ch)
+    } catch (e) {
+      // ignore
+    }
     this.useConfig()
   },
   destroyed() {
@@ -65,6 +74,7 @@ export default {
           const { token, infoPo } = response.data
           this.$store.commit('SET_TOKEN', token)
           this.$store.commit('SET_USERINFO', infoPo)
+          initWebSdkForUser(infoPo, {})
           return true
         } else {
           this.dialogTips('登录失败，请刷新重试')
